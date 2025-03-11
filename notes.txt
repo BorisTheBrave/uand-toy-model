@@ -1,0 +1,15 @@
+notes
+m = 100
+k = 3
+d = 1000
+alpha = 1
+n_epochs = 100
+batch_size = 10000
+
+Loss from training=0.000621, after 300 0.000557
+Loss from constructed=0.007203
+Loss from baseline=0.0006
+Loss from constructed+training=0.000778, after 300 0.000476
+
+
+Theory: Some of the relus are not being utilized properly. Which the constructed starting point fixes
