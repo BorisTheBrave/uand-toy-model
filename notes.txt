@@ -13,3 +13,102 @@ Loss from constructed+training=0.000778, after 300 0.000476
 
 
 Theory: Some of the relus are not being utilized properly. Which the constructed starting point fixes
+
+
+
+---
+
+are there two sorts of circuits?
+
+1. The one from the construction:
+ReLU(v0+v1+...)
+
+which tends to activate when both v0 and v1 are active.
+
+2. The inverse?
+
+ReLu(-v0-v1+...)-ReLu(v0-v1+...)-ReLU(-v0+v1+...)
+
+Truth table:
+
+v0 v1 | output
+0 0  | 1 + 0 + 0 = 1
+0 1  | 0 - 1 + 0 = -1
+1 0  | 0 + 0 - 1 = -1
+1 1  | 0 + 0 + 0 = 0
+
+I think schematically, this is computing
+
+1 - ReLU(v0-v1) - ReLU(v1-v0) + ReLU(1-v0-v1)
+
+Which has the AND truth table.
+
+Suspect thsi is a training thing. Do we get it if we start from constructed?
+
+3.
+
+Can other ratios also work?
+
+Say we have ReLU(2 v0-v1)+ReLU(-v0+2 v1)
+
+v0 v1 | output
+0 0  | 0 + 0 = 0
+0 1  | 0 + 2 = 2
+1 0  | 2 + 0 = 2
+1 1  | 1 + 1 = 2
+
+That's OR! 
+
+2-ReLU(1-2 v0+v1)-ReLU(1+v0-2 v1)
+
+v0 v1 | output
+0 0  | 2 - 1 - 1 = 0
+0 1  | 2 - 2 - 0 = 0
+1 0  | 2 - 0 - 2 = 0
+1 1  | 2 - 0 - 0 = 2
+
+Gives us AND.
+
+I suspect that there is a similar fromula for any angle, needs further exploration.
+
+Notes to do next:
+- Work out that math generalization
+- Extract some good charts for a few cases:
+  - alpha = 1
+  - alpha = 100
+  - from constructed
+  - from constructed+training
+- test with weight decay
+- test with input noise
+
+You also get very different results with weight decay, i suspect it rules out all but a few possible AND formulas
+
+
+---
+
+Reul(av0+bv1c+c)+ReLU(bv0+av1+c)
+
+v0 v1 | output
+0 0 | ReLU(c) + ReLU(c)
+0 1 | ReLU(b+c) + ReLU(a+c)
+1 0 | ReLU(a+c) + ReLU(b+c)
+1 1 | ReLU(a+b+c) + ReLU(a+b+d)
+
+Useful cases:
+a=1, b=1, c=-1 => AND
+a=-1, b=-1, c=1 => NOR
+
+a=-2, b=1, c=1 => NAND
+a=-1, b=1, c=0 => XOR
+
+In fact
+
+a=x, b=-1, c=2-x => OR for x >= 2
+a=x, b=-1, c=1-x => XOR for x >= 2
+a=-x, b=1, c=1 => NAND for x >= 2
+a=-x, b=1, c=0 => XOR for x >= 2
+
+We can clearlys ee these different classes separate out once weight decay is added.
+
+
+
